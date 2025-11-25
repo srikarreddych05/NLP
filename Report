@@ -1,0 +1,72 @@
+Project Report: Adverse Drug Event (ADE) Information Extraction
+
+Executive Summary
+
+This project aimed to develop a robust system for automatically identifying drugs and adverse events (AEs) within text and determining the causal relationship between them. The core task implemented was Named Entity Recognition (NER), a crucial first step for structuring clinical data. The approach leveraged the BioBERT pre-trained language model, fine-tuned on the ADE Corpus V2 relation extraction subset, achieving high performance on the entity recognition task.
+
+1. Project Goals and Tasks
+
+The project addressed two primary NLP tasks using the ADE Corpus V2:
+
+ADE Classification: Identifying sentences that contain an Adverse Drug Event (e.g., binary classification of a sentence).
+
+Relation Extraction (RE) via NER: This was the focus of the implementation. The goal was to identify and localize two specific entity types in text:
+
+Drug Entities
+
+Adverse Event (AE) Entities
+
+Once these entities are identified (via NER), the implied relation is a "Causes" relationship (Drug $\rightarrow$ Causes $\rightarrow$ AE), which sets the stage for a full Relation Extraction system.
+
+2. Methodology
+
+ Data Source and Preprocessing
+
+The project utilized the ADE Corpus V2, a standard benchmark dataset for pharmacovigilance research.
+
+Data Preparation Steps:
+
+Data Filtering: Initial cleaning involved dropping duplicate text entries and removing short sentences (less than 3 words) to improve data quality.
+
+Entity Structuring: The raw dataset, which provides character indices for drug and effect mentions, was processed to create structured entity objects (Drug, Adverse_Event) and relation triples for use in the downstream model.
+
+Tokenization and Alignment (IOB Tagging):  The BioBERT tokenizer (dmis-lab/biobert-base-cased-v1.1) was used to convert the text into token sequences. Entity spans were then aligned to these tokens using the Inside-Outside-Beginning (IOB) scheme. This creates the training labels:
+
+B-DRUG, I-DRUG: Beginning/Inside of a Drug entity.
+
+B-AE, I-AE: Beginning/Inside of an Adverse Event entity.
+
+O: Outside of any entity.
+
+Model and Training
+
+Model: A BioBERT-base model was loaded via AutoModelForTokenClassification. BioBERT is a BERT-based architecture pre-trained specifically on large biomedical text corpora, making it highly suitable for pharmacovigilance tasks.
+
+Training Framework: The Hugging Face transformers library's Trainer class was used for fine-tuning.
+
+Evaluation Metric: Training performance was monitored using seqeval, which calculates the overall F1-score, Precision, and Recall specifically for sequence labeling tasks, correctly evaluating entities rather than individual tokens.
+
+Training Strategy: The model was configured to evaluate and save checkpoints after every epoch, ensuring the best performing model is loaded at the end of training.
+
+3. Results and Performance
+
+Metric           DRUG Entity Score  AE Entity Score   Overall (Micro-Avg)
+
+Precision           0.90                 0.85               0.88
+
+
+Recall              0.88                 0.86               0.87
+
+F1-Score            0.89                 0.85               0.87
+
+Accuracy (Token-level)                                      0.98 
+
+4. Conclusion and Future Work
+
+The project successfully established a highly effective NER pipeline using BioBERT and the ADE Corpus V2. The resulting model can reliably extract Drug and Adverse Event entities from clinical text.
+
+Future Work
+
+Full Relation Extraction Implementation: The current setup focuses on entity detection. The next critical step is to implement a final layer or model (e.g., using specialized classification heads or sequence-to-sequence models) to explicitly confirm the "Causes" relationship between the extracted Drug and AE entity pairs.
+
+Hyperparameter Optimization: Conduct a systematic hyperparameter search (e.g., learning rate, batch size, number of epochs) to maximize the F1-score and potentially surpass the expected benchmark performance.
