@@ -4,6 +4,7 @@ We use BioBERT Model as the underlying language model:
 - Architecture: 12-layer Transformer (BERT-base style)
 - Hidden size: 768
 - Attention heads: 12
+- Parameter -110 million approx
 - Pretraining data: PubMed abstracts
 - Checkpoint: `dmis-lab/biobert-base-cased-v1.1` from  (Hugging Face)
 
